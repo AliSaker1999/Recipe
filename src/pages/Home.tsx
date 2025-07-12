@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Recipe } from "../models/Recipe";
 import {
   getAllRecipes,
@@ -10,10 +10,20 @@ import {
 const Home = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  
   const fetchRecipes = async () => {
     const data = await getAllRecipes();
     setRecipes(data);
+  };
+
+  const doLiveSearch = async (query: string) => {
+    if (!query.trim()) {
+      fetchRecipes();
+      return;
+    }
+    const results = await searchRecipes(query.trim());
+    setRecipes(results);
   };
 
   const handleDelete = async (id: number) => {
@@ -30,6 +40,20 @@ const Home = () => {
     const results = await searchRecipes(searchQuery.trim());
     setRecipes(results);
   };
+  useEffect(() => {
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+    debounceTimeout.current = setTimeout(() => {
+      doLiveSearch(searchQuery);
+    }, 350); // adjust the delay as needed
+
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
     fetchRecipes();
@@ -43,7 +67,13 @@ const Home = () => {
         </div>
 
         {/* Search */}
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 mb-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            doLiveSearch(searchQuery); // still works on submit if needed
+          }}
+          className="flex flex-col sm:flex-row gap-3 mb-6"
+        >
           <input
             type="text"
             placeholder="Search by name, ingredient, cuisine..."
