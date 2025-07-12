@@ -36,9 +36,9 @@ const CreateRecipe = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">➕ Add New Recipe</h2>
+    <div className="min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">➕ Add New Recipe</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -51,7 +51,7 @@ const CreateRecipe = () => {
             required
           />
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
               placeholder="Add Ingredient"

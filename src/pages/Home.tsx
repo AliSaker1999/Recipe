@@ -11,7 +11,6 @@ const Home = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-
   const fetchRecipes = async () => {
     const data = await getAllRecipes();
     setRecipes(data);
@@ -32,21 +31,19 @@ const Home = () => {
     setRecipes(results);
   };
 
-
   useEffect(() => {
     fetchRecipes();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-          <h1 className="text-4xl font-bold text-gray-800">🍽️ All Recipes</h1>
-          
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">🍽️ All Recipes</h1>
         </div>
 
-        {/* Search + Suggest */}
-        <form onSubmit={handleSearch} className="flex flex-wrap gap-3 mb-6">
+        {/* Search */}
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 mb-6">
           <input
             type="text"
             placeholder="Search by name, ingredient, cuisine..."
@@ -60,7 +57,6 @@ const Home = () => {
           >
             Search
           </button>
-          
           <button
             type="button"
             onClick={() => {
@@ -73,10 +69,8 @@ const Home = () => {
           </button>
         </form>
 
-    
-
         {/* Recipe Grid */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
           {recipes.map((r) => (
             <div
               key={r.id}
@@ -89,9 +83,11 @@ const Home = () => {
                 Delete
               </button>
 
-              <h2 className="text-2xl font-semibold text-indigo-600 mb-2">{r.name}</h2>
+              <h2 className="text-2xl font-semibold text-indigo-600 mb-2 break-words">
+                {r.name}
+              </h2>
 
-              <div className="text-gray-700 space-y-1">
+              <div className="text-gray-700 space-y-1 text-sm">
                 <p>
                   <span className="font-medium">Cuisine:</span> {r.cuisineType}
                 </p>
@@ -115,8 +111,7 @@ const Home = () => {
                   </select>
                 </div>
                 <p>
-                  <span className="font-medium">Ingredients:</span>{" "}
-                  {r.ingredients.join(", ")}
+                  <span className="font-medium">Ingredients:</span> {r.ingredients.join(", ")}
                 </p>
                 <p>
                   <span className="font-medium">Instructions:</span> {r.instructions}
