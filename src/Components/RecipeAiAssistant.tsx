@@ -1,31 +1,31 @@
 import { useState } from "react";
 import { askAi } from "../services/RecipeService";
+import { FaRobot, FaSpinner } from "react-icons/fa";
+import { AnimatePresence, motion } from "framer-motion";
+
+interface RecipeAiAssistantProps {
+  externalQuestion?: string;
+  setExternalQuestion?: (q: string) => void;
+}
 
 const formatAiAnswer = (answer: string) => {
-  // Split answer into lines and filter out empty lines
   const lines = answer.split("\n").filter(l => l.trim().length > 0);
-
-  // Extract summary lines (e.g., "Based on this analysis...")
   const summaryLines = lines.filter(line =>
     /based on|summary|overall|in conclusion/i.test(line)
   );
   const otherLines = lines.filter(line => !summaryLines.includes(line));
 
-  // Build formatted JSX
   return (
     <div className="space-y-3">
-      {/* Render list for bullet points */}
-      <ul className="list-disc pl-6 space-y-1 text-gray-900">
+      <ul className="list-disc pl-6 space-y-2 text-gray-900 text-base">
         {otherLines.map((line, idx) => {
-          // Remove "AI: " if present
           let cleanLine = line.replace(/^AI:\s?/i, "");
-          // Highlight recipe names before the colon
           if (cleanLine.startsWith("*")) cleanLine = cleanLine.slice(1);
           const [title, ...rest] = cleanLine.split(":");
           if (rest.length) {
             return (
               <li key={idx}>
-                <span className="font-bold">{title.trim()}:</span>
+                <span className="font-bold text-blue-600">{title.trim()}:</span>
                 {rest.join(":")}
               </li>
             );
@@ -33,9 +33,8 @@ const formatAiAnswer = (answer: string) => {
           return <li key={idx}>{cleanLine}</li>;
         })}
       </ul>
-      {/* Render summary in a highlighted box */}
       {summaryLines.length > 0 && (
-        <div className="p-3 bg-indigo-100 border border-indigo-300 rounded text-indigo-900 font-medium">
+        <div className="p-4 bg-gradient-to-r from-indigo-100 to-blue-50 border-l-4 border-indigo-400 rounded text-indigo-900 font-semibold text-base shadow">
           {summaryLines.map((s, idx) => (
             <div key={idx}>{s.replace(/^AI:\s?/i, "")}</div>
           ))}
@@ -45,13 +44,24 @@ const formatAiAnswer = (answer: string) => {
   );
 };
 
-const RecipeAiAssistant = () => {
+const RecipeAiAssistant: React.FC<RecipeAiAssistantProps> = ({
+  externalQuestion,
+  setExternalQuestion,
+}) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+   const [internalQuestion, setInternalQuestion] = useState("");
+
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInternalQuestion(e.target.value);
+    if (setExternalQuestion) setExternalQuestion(e.target.value);
+  };
 
   const handleAsk = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!question.trim()) return;
     setLoading(true);
     setAnswer(null);
     try {
@@ -67,34 +77,83 @@ const RecipeAiAssistant = () => {
     setLoading(false);
   };
 
+  const handleReset = () => {
+    setQuestion("");
+    setAnswer(null);
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow p-6 mb-8">
-      <h2 className="text-xl font-bold mb-3">🤖 Recipe AI Assistant</h2>
-      <form onSubmit={handleAsk} className="flex gap-2 mb-3">
-        <input
-          type="text"
-          className="flex-1 border px-3 py-2 rounded"
-          value={question}
-          onChange={e => setQuestion(e.target.value)}
-          placeholder="Ask about nutrition, best recipe, high protein..."
-        />
+    <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-8 my-14 border border-blue-50">
+      <h1 className="text-3xl sm:text-4xl font-extrabold mb-8 text-center">
+        <span className="inline-flex items-center gap-3">
+          <FaRobot className="text-violet-500 text-3xl animate-bounce-slow" />
+          <span>
+            Ask the <span className="bg-gradient-to-r from-blue-700 to-pink-500 bg-clip-text text-transparent">AI Assistant</span>
+          </span>
+        </span>
+      </h1>
+      <form onSubmit={handleAsk} className="flex flex-col sm:flex-row gap-3 mb-3 items-center">
+        <div className="relative w-full flex-1">
+          <FaRobot className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-300 text-lg pointer-events-none" />
+          <input
+            type="text"
+            className="pl-11 pr-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-300 w-full text-lg transition"
+            value={question}
+            onChange={e => setQuestion(e.target.value)}
+            placeholder="Ask about nutrition, best recipe, high protein..."
+            disabled={loading}
+            autoFocus
+          />
+        </div>
         <button
           type="submit"
-          disabled={loading}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+          disabled={loading || !question.trim()}
+          className="bg-violet-600 hover:bg-violet-700 text-white px-8 py-3 rounded-xl text-base font-bold transition flex items-center min-w-[100px] justify-center"
         >
-          {loading ? "Asking..." : "Ask AI"}
+          {loading ? (
+            <>
+              <FaSpinner className="animate-spin mr-2" />
+              Thinking...
+            </>
+          ) : (
+            "Ask AI"
+          )}
+        </button>
+        {/* Reset Button */}
+        <button
+          type="button"
+          onClick={handleReset}
+          disabled={(!question && !answer) || loading}
+          className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-7 py-3 rounded-xl text-base font-semibold transition border border-gray-200"
+        >
+          Reset
         </button>
       </form>
-      {answer && (
-        <div className="bg-gray-50 p-4 rounded-lg mt-2">
-          <div className="mb-2 text-sm text-gray-500 font-semibold flex items-center gap-2">
-            <span role="img" aria-label="robot">🤖</span>
-            AI Answer:
-          </div>
-          {formatAiAnswer(answer)}
-        </div>
-      )}
+      <AnimatePresence>
+        {loading && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="mt-8 flex items-center justify-center gap-2 text-indigo-600 font-semibold text-lg"
+          >
+            <FaRobot className="animate-bounce text-xl" /> AI is thinking...
+          </motion.div>
+        )}
+        {answer && !loading && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="bg-gray-50 p-6 rounded-2xl mt-6 border border-indigo-100 transition-all"
+          >
+            <div className="mb-3 text-base text-indigo-600 font-semibold flex items-center gap-2">
+              <FaRobot /> AI Answer:
+            </div>
+            {formatAiAnswer(answer)}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

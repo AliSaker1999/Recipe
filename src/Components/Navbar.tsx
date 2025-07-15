@@ -6,9 +6,8 @@ interface NavbarProps {
   onRegister?: () => void;
 }
 
-
-const Navbar : React.FC<NavbarProps>= ({ onLogin, onRegister }) => {
-  const { token, logout } = useAuth();
+const Navbar: React.FC<NavbarProps> = ({ onLogin, onRegister }) => {
+  const { token, logout, role } = useAuth();
   const isLoggedIn = !!token;
   const navigate = useNavigate();
 
@@ -20,7 +19,7 @@ const Navbar : React.FC<NavbarProps>= ({ onLogin, onRegister }) => {
       >
         RecipeLand
       </span>
-      <div>
+      <div className="flex items-center space-x-2">
         {!isLoggedIn ? (
           <>
             <button
@@ -38,12 +37,23 @@ const Navbar : React.FC<NavbarProps>= ({ onLogin, onRegister }) => {
           </>
         ) : (
           <>
-            <button
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
-              onClick={() => navigate("/dashboard/home")}
-            >
-              Dashboard
-            </button>
+            {/* Role-based dashboard buttons */}
+            {role === "Admin" && (
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
+                onClick={() => navigate("/dashboard/home")}
+              >
+                Admin Dashboard
+              </button>
+            )}
+            {role === "User" && (
+              <button
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 mr-2"
+                onClick={() => navigate("/user-dashboard/home")}
+              >
+                My Dashboard
+              </button>
+            )}
             <button
               className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
               onClick={logout}
@@ -56,4 +66,5 @@ const Navbar : React.FC<NavbarProps>= ({ onLogin, onRegister }) => {
     </header>
   );
 };
+
 export default Navbar;
