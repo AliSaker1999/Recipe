@@ -1,9 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth ,AuthProvider} from "../context/AuthContext";
-
-
+import { useAuth } from "../context/AuthContext";
+import { loginUser } from "../services/authService";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -17,12 +15,8 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("https://recipeapi-87od.onrender.com/api/account/login", {
-        username,
-        password,
-      });
-
-      login(res.data.token, res.data.role);
+      const res = await loginUser(username, password); // use service
+      login(res.token, res.role);
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid credentials.");

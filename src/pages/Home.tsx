@@ -124,7 +124,7 @@ const Home = () => {
                 <p>
                   <span className="font-medium">Prep Time:</span> {r.preparationTime} min
                 </p>
-                <div>
+                {/* <div>
                   <label className="font-medium mr-2">Status:</label>
                   <select
                     value={r.status}
@@ -139,7 +139,7 @@ const Home = () => {
                     <option value="favorite">Favorite</option>
                     <option value="made before">Made Before</option>
                   </select>
-                </div>
+                </div> */}
                 <p>
                   <span className="font-medium">Ingredients:</span> {r.ingredients.join(", ")}
                 </p>

@@ -1,7 +1,4 @@
-import axios from "axios";
-
-// CHANGE THIS TO YOUR DEPLOYED URL!
-const api = "https://recipeapi-87od.onrender.com/api/account";
+import api from "./api";
 
 const getAuthHeaders = () => ({
   headers: {
@@ -14,18 +11,18 @@ export const registerUser = async (
   username: string,
   password: string
 ) => {
-  return await axios.post(
-    `${api}/register`,
+  return await api.post(
+    `/account/register`,
     { email, username, password },
     getAuthHeaders()
   );
 };
 
 export const deleteUser = async (username: string) => {
-  return await axios.delete(`${api}/${username}`, getAuthHeaders());
+  return await api.delete(`/account/${username}`, getAuthHeaders());
 };
 
 export const getAllUsers = async () => {
-  const response = await axios.get(`${api}/all`, getAuthHeaders());
+  const response = await api.get(`/account/all`, getAuthHeaders());
   return response.data;
 };

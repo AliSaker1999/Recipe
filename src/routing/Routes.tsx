@@ -1,16 +1,15 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "../pages/Login";
+import HomePage from "../pages/HomePage";           // new public homepage!
 import DashboardLayout from "../pages/DashboardLayout";
-import Home from "../pages/Home";
-import CreateRecipe from "../pages/CreateRecipe";
+import Home from "../pages/Home";                   // your dashboard "all recipes"
+// import MyRecipes from "../pages/MyRecipes";         // user's own recipes page (new)
 import Users from "../pages/Users";
 import AiAssistantPage from "../pages/AiAssistantPage";
 import ProtectedRoute from "./ProtectedRoute";
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<Navigate to="/login" />} />
-    <Route path="/login" element={<Login />} />
+    <Route path="/" element={<HomePage />} />       {/* new home page! */}
     <Route
       path="/dashboard"
       element={
@@ -19,14 +18,14 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     >
-      <Route path="home" element={<Home />} />
-      <Route path="create" element={<CreateRecipe />} />
+      <Route path="home" element={<Home />} />      {/* all recipes for user */}
+      {/* <Route path="my" element={<MyRecipes />} />   my recipes page */}
       <Route path="users" element={<Users />} />
       <Route path="ai" element={<AiAssistantPage />} />
       <Route index element={<Navigate to="home" />} />
     </Route>
     {/* fallback */}
-    <Route path="*" element={<Navigate to="/login" />} />
+    <Route path="*" element={<Navigate to="/" />} />
   </Routes>
 );
 

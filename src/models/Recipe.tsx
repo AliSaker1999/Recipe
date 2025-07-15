@@ -5,5 +5,5 @@ export interface Recipe {
   instructions: string;
   cuisineType: string;
   preparationTime: number;
-  status: string;
+  
 }
