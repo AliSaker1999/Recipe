@@ -2,6 +2,8 @@ import { useState } from "react";
 import { askAi } from "../services/RecipeService";
 import { FaRobot, FaSpinner } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
+import { askUserAi } from "../services/UserRecipeService";
 
 interface RecipeAiAssistantProps {
   externalQuestion?: string;
@@ -10,6 +12,7 @@ interface RecipeAiAssistantProps {
 
 const formatAiAnswer = (answer: string) => {
   const lines = answer.split("\n").filter(l => l.trim().length > 0);
+  
   const summaryLines = lines.filter(line =>
     /based on|summary|overall|in conclusion/i.test(line)
   );
@@ -51,8 +54,17 @@ const RecipeAiAssistant: React.FC<RecipeAiAssistantProps> = ({
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-   const [internalQuestion, setInternalQuestion] = useState("");
+  const [internalQuestion, setInternalQuestion] = useState("");
+  const { token } = useAuth();
+  const statusOptions = [
+  { value: "all", label: "All Recipes" },
+  { value: "", label: "All My Recipes" },
+  { value: "favorite", label: "Favorite" },
+  { value: "to try", label: "To Try" },
+  { value: "made before", label: "Made Before" },
+  ];
 
+  const [status, setStatus] = useState<string>("");
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInternalQuestion(e.target.value);
@@ -60,22 +72,34 @@ const RecipeAiAssistant: React.FC<RecipeAiAssistantProps> = ({
   };
 
   const handleAsk = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!question.trim()) return;
-    setLoading(true);
-    setAnswer(null);
-    try {
-      const aiAnswer = await askAi(question);
-      setAnswer(aiAnswer);
-    } catch (err: any) {
-      if (err.response && err.response.data) {
-        setAnswer("Error: " + JSON.stringify(err.response.data));
+  e.preventDefault();
+  if (!question.trim()) return;
+  setLoading(true);
+  setAnswer(null);
+  try {
+    let aiAnswer: string;
+    if (token) {
+      // If user selects "All Recipes", use global askAi (RecipeService)
+      if (status === "all") {
+        aiAnswer = await askAi(question);
       } else {
-        setAnswer("Sorry, something went wrong.");
+        // Use user recipes endpoint for other statuses (including "All My Recipes")
+        aiAnswer = await askUserAi(question, token, status || undefined);
       }
+    } else {
+      // Not logged in, only global
+      aiAnswer = await askAi(question);
     }
-    setLoading(false);
-  };
+    setAnswer(aiAnswer);
+  } catch (err: any) {
+    if (err.response && err.response.data) {
+      setAnswer("Error: " + JSON.stringify(err.response.data));
+    } else {
+      setAnswer("Sorry, something went wrong.");
+    }
+  }
+  setLoading(false);
+};
 
   const handleReset = () => {
     setQuestion("");
@@ -93,32 +117,43 @@ const RecipeAiAssistant: React.FC<RecipeAiAssistantProps> = ({
         </span>
       </h1>
       <form onSubmit={handleAsk} className="flex flex-col sm:flex-row gap-3 mb-3 items-center">
-        <div className="relative w-full flex-1">
-          <FaRobot className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-300 text-lg pointer-events-none" />
-          <input
-            type="text"
-            className="pl-11 pr-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-300 w-full text-lg transition"
-            value={question}
-            onChange={e => setQuestion(e.target.value)}
-            placeholder="Ask about nutrition, best recipe, high protein..."
-            disabled={loading}
-            autoFocus
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading || !question.trim()}
-          className="bg-violet-600 hover:bg-violet-700 text-white px-8 py-3 rounded-xl text-base font-bold transition flex items-center min-w-[100px] justify-center"
-        >
-          {loading ? (
-            <>
-              <FaSpinner className="animate-spin mr-2" />
-              Thinking...
-            </>
-          ) : (
-            "Ask AI"
-          )}
-        </button>
+  <div className="relative w-full flex-1">
+    <FaRobot className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-300 text-lg pointer-events-none" />
+    <input
+      type="text"
+      className="pl-11 pr-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-300 w-full text-lg transition"
+      value={question}
+      onChange={e => setQuestion(e.target.value)}
+      placeholder="Ask about nutrition, best recipe, high protein..."
+      disabled={loading}
+      autoFocus
+    />
+  </div>
+  {token && (
+    <select
+      value={status}
+      onChange={e => setStatus(e.target.value)}
+      className="min-w-[190px] px-3 py-3 rounded-xl border border-gray-200 shadow focus:ring-2 focus:ring-blue-300 text-base font-medium"
+    >
+      {statusOptions.map(opt => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
+  )}
+  <button
+    type="submit"
+    disabled={loading || !question.trim()}
+    className="bg-violet-600 hover:bg-violet-700 text-white px-8 py-3 rounded-xl text-base font-bold transition flex items-center min-w-[100px] justify-center"
+  >
+    {loading ? (
+      <>
+        <FaSpinner className="animate-spin mr-2" />
+        Thinking...
+      </>
+    ) : (
+      "Ask AI"
+    )}
+  </button>
         {/* Reset Button */}
         <button
           type="button"

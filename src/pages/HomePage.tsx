@@ -7,7 +7,7 @@ import RegisterModal from "../Components/RegisterModal";
 import Navbar from "../Components/Navbar";
 import { FaSearch, FaHeart } from "react-icons/fa";
 import RecipeAiAssistant from "../Components/RecipeAiAssistant";
-
+import RecipeHoverCard from "../Components/RecipeHoverCard";
 
 const HomePage = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -172,36 +172,11 @@ const HomePage = () => {
           </div>
         ))}
         {hoveredRecipe && (
-  <div
-    className="fixed z-50 bg-white rounded-3xl shadow-2xl border border-pink-200 p-8"
-    style={{
-      top: hoverPosition.y,
-      left: hoverPosition.x,
-      minWidth: 420,
-      maxWidth: 500,
-      minHeight: 280,
-      maxHeight: 560,
-      overflowY: "auto",
-      boxShadow: "0 8px 40px 0 rgba(232, 88, 191, 0.10), 0 1.5px 16px 0 rgba(80, 120, 255, 0.13)",
-    }}
-  >
-    <div className="flex justify-between items-center mb-2">
-      <h2 className="font-extrabold text-3xl text-pink-700">{hoveredRecipe.name}</h2>
-      <span className="italic text-lg text-gray-400">{hoveredRecipe.cuisineType} · {hoveredRecipe.preparationTime} min</span>
-    </div>
-    <div className="mb-3">
-      <span className="font-bold text-lg block mb-1">Ingredients:</span>
-      <ul className="ml-5 text-base list-disc text-blue-700">
-        {hoveredRecipe.ingredients.map((ingredient: string, idx: number) => (
-          <li key={idx}>{ingredient}</li>
-        ))}
-      </ul>
-    </div>
-    <div>
-      <span className="font-bold text-lg block mb-1">Instructions:</span>
-      <p className="text-gray-700 text-base">{hoveredRecipe.instructions}</p>
-    </div>
-  </div>
+  <RecipeHoverCard
+    recipe={hoveredRecipe}
+    position={hoverPosition}
+    onClose={() => setHoveredRecipe(null)}
+  />
 )}
         
       </div>

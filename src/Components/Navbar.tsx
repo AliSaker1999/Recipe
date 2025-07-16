@@ -51,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogin, onRegister }) => {
                 className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 mr-2"
                 onClick={() => navigate("/user-dashboard/home")}
               >
-                My Dashboard
+                My Recipes
               </button>
             )}
             <button

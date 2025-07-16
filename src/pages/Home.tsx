@@ -124,22 +124,7 @@ const Home = () => {
                 <p>
                   <span className="font-medium">Prep Time:</span> {r.preparationTime} min
                 </p>
-                {/* <div>
-                  <label className="font-medium mr-2">Status:</label>
-                  <select
-                    value={r.status}
-                    onChange={async (e) => {
-                      const newStatus = e.target.value;
-                      await updateRecipeStatus(r.id, newStatus);
-                      fetchRecipes();
-                    }}
-                    className="border px-2 py-1 rounded text-sm bg-white"
-                  >
-                    <option value="to try">To Try</option>
-                    <option value="favorite">Favorite</option>
-                    <option value="made before">Made Before</option>
-                  </select>
-                </div> */}
+                
                 <p>
                   <span className="font-medium">Ingredients:</span> {r.ingredients.join(", ")}
                 </p>

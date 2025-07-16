@@ -60,3 +60,18 @@ export const filterUserRecipes = async (
     })
   ).data;
 };
+
+export const askUserAi = async (
+  question: string,
+  token: string,
+  status?: string
+): Promise<string> => {
+  const response = await axios.post(
+    `${process.env.REACT_APP_API_URL}/userrecipe/ask-user-ai`,
+    { question, status }, // Dto matches backend
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+  return response.data.answer;
+};

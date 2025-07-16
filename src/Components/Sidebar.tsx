@@ -8,6 +8,7 @@ import {
   FaSignOutAlt,
   FaBars,
   FaFilter,
+  FaTimes,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
@@ -27,7 +28,7 @@ const Sidebar = () => {
   ];
 
   const userLinks = [
-    { to: "/user-dashboard/home", icon: <FaHome />, label: "All Recipes" },
+    { to: "/user-dashboard/home", icon: <FaHome />, label: "My Recipes" },
     { to: "/user-dashboard/filter", icon: <FaFilter />, label: "Filter Recipes" },
     { to: "/user-dashboard/ai", icon: <FaRobot />, label: "AI Assistant" },
   ];
@@ -55,37 +56,55 @@ const Sidebar = () => {
       <aside
         className={`${
           open ? "block" : "hidden"
-        } sm:flex flex-col bg-white/60 backdrop-blur border-r shadow-xl sm:w-64 w-full sm:h-auto sm:relative absolute z-50 top-0 left-0 h-screen p-6 transition-all`}
+        } sm:flex flex-col bg-white/60 backdrop-blur border-r shadow-xl sm:w-64 w-full sm:h-auto sm:relative absolute z-50 top-0 left-0
+          sm:py-6 sm:px-0 px-4 pt-4 pb-0 h-full transition-all`}
+        style={{ maxWidth: 320 }}
       >
-        <h2 className="text-2xl font-extrabold text-blue-700 mb-8 hidden sm:block tracking-wide">
-          Recipe {role === "Admin" ? "Admin" : "User"}
-        </h2>
-        <nav className="flex flex-col gap-2">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={linkClass}
-              onClick={() => setOpen(false)}
-              end
-            >
-              <span className="text-lg">{link.icon}</span>
-              <span>{link.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-        {token && (
-          <button
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-            className="mt-12 flex items-center gap-3 px-5 py-3 rounded-2xl text-red-600 hover:bg-red-50 font-medium shadow-sm text-base transition"
-          >
-            <FaSignOutAlt /> Logout
+        {/* X close button - mobile only */}
+        <div className="flex justify-between items-center mb-4 sm:hidden">
+          <span className="text-2xl font-extrabold text-blue-700 tracking-wide">
+            Recipe {role === "Admin" ? "Admin" : "User"}
+          </span>
+          <button onClick={() => setOpen(false)} className="text-gray-500 text-2xl p-1">
+            <FaTimes />
           </button>
-        )}
+        </div>
+        {/* Main nav & logout */}
+        <div className="flex flex-col justify-between h-[calc(100dvh-16px)] sm:h-auto">
+          <nav className="flex flex-col gap-2">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={linkClass}
+                onClick={() => setOpen(false)}
+                end
+              >
+                <span className="text-lg">{link.icon}</span>
+                <span>{link.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+          {token && (
+            <button
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+              className="mt-8 mb-2 flex items-center gap-3 px-5 py-3 rounded-2xl text-red-600 hover:bg-red-50 font-medium shadow-sm text-base transition"
+            >
+              <FaSignOutAlt /> Logout
+            </button>
+          )}
+        </div>
       </aside>
+      {/* Overlay when sidebar open */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-20 z-40 sm:hidden"
+          onClick={() => setOpen(false)}
+        />
+      )}
     </>
   );
 };
