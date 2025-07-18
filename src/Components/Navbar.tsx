@@ -17,7 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogin, onRegister }) => {
         className="text-lg font-bold text-blue-700 cursor-pointer"
         onClick={() => navigate("/")}
       >
-        RecipeLand
+        RecipeLand 
       </span>
       <div className="flex items-center space-x-2">
         {!isLoggedIn ? (

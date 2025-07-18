@@ -1,0 +1,32 @@
+// RecipeLandLogo.tsx
+const RecipeLandLogo = ({ size = 48 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 60 60"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <linearGradient id="grad" x1="0" x2="60" y1="30" y2="30" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#2563eb"/>
+        <stop offset="1" stopColor="#ec4899"/>
+      </linearGradient>
+    </defs>
+    {/* Chef hat */}
+    <ellipse cx="30" cy="21" rx="18" ry="10" fill="url(#grad)" />
+    <ellipse cx="30" cy="28" rx="14" ry="7" fill="#fff" stroke="url(#grad)" strokeWidth="2"/>
+    {/* Plate */}
+    <ellipse cx="30" cy="41" rx="14" ry="5" fill="url(#grad)" opacity="0.18"/>
+    {/* Spoon */}
+    <rect x="43" y="33" width="4" height="16" rx="2" fill="url(#grad)" transform="rotate(-17 43 33)" />
+    {/* Fork */}
+    <rect x="13" y="33" width="2.3" height="14" rx="1.1" fill="url(#grad)" transform="rotate(17 13 33)" />
+    <rect x="11" y="33" width="0.6" height="4" rx="0.3" fill="url(#grad)" transform="rotate(17 11 33)" />
+    <rect x="15" y="33" width="0.6" height="4" rx="0.3" fill="url(#grad)" transform="rotate(17 15 33)" />
+    {/* Text (optional for big screens) */}
+    {/* <text x="30" y="58" fontFamily="Montserrat,sans-serif" fontWeight="bold" fontSize="12" textAnchor="middle" fill="url(#grad)">RecipeLand</text> */}
+  </svg>
+);
+
+export default RecipeLandLogo;
