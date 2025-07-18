@@ -152,7 +152,42 @@ const HomePage = () => {
           cardRef.current = null;
         }}
       >
-        {/* ...the rest of your existing recipe card code... */}
+        <span className="absolute -top-4 right-5 z-10">
+                <FaHeart className="text-pink-300 opacity-40 group-hover:opacity-60 text-2xl transition" />
+              </span>
+              <h2 className="font-bold text-2xl mb-2 text-gray-800">{r.name}</h2>
+              <p className="text-gray-500 mb-3 text-sm italic">
+                {r.cuisineType} &middot; {r.preparationTime} min
+              </p>
+              <ul className="text-base text-gray-700 mb-4 pl-3">
+                {r.ingredients.slice(0, 3).map((ingredient, idx) => (
+                  <li key={idx} className="list-disc ml-3">{ingredient}</li>
+                ))}
+                {r.ingredients.length > 3 && (
+                  <li className="ml-3 text-gray-400">...and more</li>
+                )}
+              </ul>
+              <button
+                className="mt-auto bg-gradient-to-r from-blue-500 to-pink-500 text-white font-semibold py-3 rounded-2xl hover:from-blue-600 hover:to-pink-600 transition shadow-lg"
+                onClick={async () => {
+                  if (!localStorage.getItem("token")) {
+                    setShowLogin(true);
+                  } else {
+                    try {
+                      await addUserRecipe(r.name, "favorite"); // default status
+                      setAddMessage(`Added "${r.name}" to your recipes!`);
+                      setTimeout(() => setAddMessage(""), 1800);
+                    } catch (err: any) {
+                      setAddMessage(
+                        err?.response?.data?.message || "Error adding recipe (maybe already added)"
+                      );
+                      setTimeout(() => setAddMessage(""), 2000);
+                    }
+                  }
+                }}
+              >
+                Add to My Recipes
+              </button>
       </div>
     ))
   )}
